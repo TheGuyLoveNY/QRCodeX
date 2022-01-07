@@ -5,18 +5,17 @@ using UnityEngine.UI;
 
 public class SceneManager : MonoBehaviour
 {
+    private const string nextScene = "UnityDemo";
 
-    public Text messageText;
-
-    public void Start()
+    public void RequestCamera()
     {
-        messageText.gameObject.SetActive(false);
+        PermissionManager.RequestCameraPermissionAction.Invoke();
+    }
+
+    public void LoadScene()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(nextScene);
     }
 
 
-    public void ShowMessage()
-    {
-        messageText.gameObject.SetActive(true);
-        messageText.text = "Hello World!";
-    }
 }

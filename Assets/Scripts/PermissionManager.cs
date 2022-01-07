@@ -4,22 +4,23 @@ using UnityEngine;
 using UnityEngine.Android;
 using UnityEngine.Events;
 
-public class PermissionManager
+public static class PermissionManager
 {
 
-    public UnityAction RequestCameraPermissionAction => RequestCameraAccess;
-    public bool HaveCameraPermission
+    public static UnityAction RequestCameraPermissionAction => RequestCameraAccess;
+    public static bool HaveCameraPermission
     {
         get => HasUserAuthorizedCamera();
     }
 
-    private bool HasUserAuthorizedCamera()
+    private static bool HasUserAuthorizedCamera()
     {
         return Permission.HasUserAuthorizedPermission(Permission.Camera);
     }
 
-    private void RequestCameraAccess()
+    private static void RequestCameraAccess()
     {
+        Debug.Log("Requesting Permission!");
         //Already Authorized.
         if (!HaveCameraPermission)
             Permission.RequestUserPermission(Permission.Camera);

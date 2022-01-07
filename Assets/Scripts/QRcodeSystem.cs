@@ -12,7 +12,6 @@ public class QRcodeSystem : MonoBehaviour
 {
     //TODO: CLEAN UP!!
 
-    //Note: Release the camera onDisable.
     public float readTime = 3f;
     public RawImage camTexture;
     public RawImage qrCodeRawImage;
@@ -32,7 +31,6 @@ public class QRcodeSystem : MonoBehaviour
     private const int threadSleepTime = 200;
 
     private bool shouldEncode = false;
-    private bool signalQRDetected = false;
     private string encodeData = string.Empty;
 
     //Camera Properties
@@ -47,7 +45,10 @@ public class QRcodeSystem : MonoBehaviour
 
     private void OnEnable()
     {
-        if (cameraTexture != null)
+        if (!PermissionManager.HaveCameraPermission)
+            PermissionManager.RequestCameraPermissionAction.Invoke();
+
+        if (cameraTexture != null && !cameraTexture.isPlaying)
         {
             cameraTexture.Play();
             camWidth = cameraTexture.width;
@@ -77,20 +78,21 @@ public class QRcodeSystem : MonoBehaviour
             cameraProperties.requestedFPS = defaultCameraFPS;
         }
 
-        //cameraTexture = new WebCamTexture
-        //{
-        //    requestedWidth = cameraProperties.requestedWidth,
-        //    requestedHeight = cameraProperties.requestedHeight,
-        //    requestedFPS = cameraProperties.requestedFPS > 0 ? cameraProperties.requestedFPS : (cameraProperties.requestedFPS = defaultCameraFPS)
-        //};        
-        print($"Width : {camTexture.rectTransform.rect.width} | Heigth : {camTexture.rectTransform.rect.height}");
-
         cameraTexture = new WebCamTexture
         {
-            requestedWidth = (int) camTexture.rectTransform.rect.width,
-            requestedHeight = (int) camTexture.rectTransform.rect.height,
+            requestedWidth = cameraProperties.requestedWidth,
+            requestedHeight = cameraProperties.requestedHeight,
             requestedFPS = cameraProperties.requestedFPS > 0 ? cameraProperties.requestedFPS : (cameraProperties.requestedFPS = defaultCameraFPS)
         };
+
+        //print($"Width : {camTexture.rectTransform.rect.width} | Heigth : {camTexture.rectTransform.rect.height}");
+
+        //cameraTexture = new WebCamTexture
+        //{
+        //    requestedWidth = (int) camTexture.rectTransform.rect.width,
+        //    requestedHeight = (int) camTexture.rectTransform.rect.height,
+        //    requestedFPS = cameraProperties.requestedFPS > 0 ? cameraProperties.requestedFPS : (cameraProperties.requestedFPS = defaultCameraFPS)
+        //};
 
         camWidth = cameraTexture.width;
         camHeight = cameraTexture.height;
@@ -127,19 +129,13 @@ public class QRcodeSystem : MonoBehaviour
         if (shouldEncode && !string.IsNullOrEmpty(encodeData))
             GenerateQRCode(encodeData);
 
-        if (signalQRDetected)
-        {
-            QRCodeDetected?.Invoke();
-            signalQRDetected = false;
-        }
-
         //TODO: Remove (only for testing)
         TestSystem();
     }
 
     public void GenerateQRCode(string encodeData)
     {
-        if (string.IsNullOrEmpty(encodeData))
+        if (string.IsNullOrEmpty(encodeData) || !shouldEncode)
             return;
 
         var color32 = Encode(encodeData, tempQRCodeTexture2D.width , tempQRCodeTexture2D.height);
@@ -147,6 +143,7 @@ public class QRcodeSystem : MonoBehaviour
         tempQRCodeTexture2D.Apply();
 
         qrCodeRawImage.texture = tempQRCodeTexture2D;
+        QRCodeDetected?.Invoke();
         shouldEncode = false;
     }
 
@@ -169,7 +166,6 @@ public class QRcodeSystem : MonoBehaviour
                 {
                     encodeData = result.Text;
                     shouldEncode = true;
-                    signalQRDetected = true;
                 }
 
                 //Sleep and then reset the captured frame.
@@ -223,7 +219,7 @@ public class QRcodeSystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M))
         {
             shouldEncode = true;
-            GenerateQRCode(testQRCode);
+            encodeData = testQRCode;
         }
 
     }
