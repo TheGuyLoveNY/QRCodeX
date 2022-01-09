@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -10,15 +8,24 @@ using ZXing.QrCode;
 
 public class QRcodeSystem : MonoBehaviour
 {
-    //TODO: CLEAN UP!!
+    public enum SystemMode
+    {
+        GENERATE,
+        SCAN,
+        BOTH
+    }
+    public SystemMode systemMode = SystemMode.BOTH;
 
-    public float readTime = 3f;
-    public RawImage camTexture;
-    public RawImage qrCodeRawImage;
 
-    public string testQRCode = "www.google.com";
+    public RawImage cameraRenderTexture;
+    public RawImage generatedQRCodeTexture;
 
     public UnityAction QRCodeDetected;
+
+
+    //----------- Private Fields --------------
+    [SerializeField] 
+    private CameraProperties cameraProperties;
 
     private WebCamTexture cameraTexture;
     private Texture2D tempQRCodeTexture2D;
@@ -28,14 +35,14 @@ public class QRcodeSystem : MonoBehaviour
     private Thread renderingThread;
 
     private int camWidth, camHeight;
+    private int defaultCameraFPS = 30;
     private const int threadSleepTime = 200;
-
+    
     private bool shouldEncode = false;
     private string encodeData = string.Empty;
 
-    //Camera Properties
-    [SerializeField] private CameraProperties cameraProperties;
-    private int defaultCameraFPS = 30;
+    private const string testQRCode = "www.fakesouls.com";
+
 
     private void Awake()
     {
@@ -45,6 +52,12 @@ public class QRcodeSystem : MonoBehaviour
 
     private void OnEnable()
     {
+
+        //We need camera permission or to render camera for QRCode Generation.
+        if (systemMode == SystemMode.GENERATE)
+            return;
+
+
         if (!PermissionManager.HaveCameraPermission)
         {
             PermissionManager.RequestCameraPermissionAction.Invoke();
@@ -70,51 +83,45 @@ public class QRcodeSystem : MonoBehaviour
 
     private void InitializeSystem()
     {
-        //screenRect = new Rect(0, 0, Screen.width, Screen.height);
-        screenRect = new Rect(0, 0, camTexture.rectTransform.rect.width, camTexture.rectTransform.rect.height);
-
-        if (cameraProperties.useDefaultSettings)
-        {
-            //Setting default values.
-            cameraProperties.requestedHeight = (int) screenRect.height;
-            cameraProperties.requestedWidth = (int)screenRect.width;
-            cameraProperties.requestedFPS = defaultCameraFPS;
-        }
-
-        cameraTexture = new WebCamTexture
-        {
-            requestedWidth = cameraProperties.requestedWidth,
-            requestedHeight = cameraProperties.requestedHeight,
-            requestedFPS = cameraProperties.requestedFPS > 0 ? cameraProperties.requestedFPS : (cameraProperties.requestedFPS = defaultCameraFPS)
-        };
-
-        //print($"Width : {camTexture.rectTransform.rect.width} | Heigth : {camTexture.rectTransform.rect.height}");
-
-        //cameraTexture = new WebCamTexture
-        //{
-        //    requestedWidth = (int) camTexture.rectTransform.rect.width,
-        //    requestedHeight = (int) camTexture.rectTransform.rect.height,
-        //    requestedFPS = cameraProperties.requestedFPS > 0 ? cameraProperties.requestedFPS : (cameraProperties.requestedFPS = defaultCameraFPS)
-        //};
-
-        camWidth = cameraTexture.width;
-        camHeight = cameraTexture.height;
-
         tempQRCodeTexture2D = new Texture2D(256, 256);
 
         qrCodeReader = new BarcodeReader
         {
             AutoRotate = false,
-            Options = new ZXing.Common.DecodingOptions { TryHarder = true }
+            Options = new ZXing.Common.DecodingOptions { TryHarder = true } //Decodes aggressively (More computation)
         };
 
-        OnEnable();
+
+        //Follow Initialization should be only for QRScan
+        if (systemMode != SystemMode.GENERATE)
+        {
+            screenRect = new Rect(0, 0, cameraRenderTexture.rectTransform.rect.width, cameraRenderTexture.rectTransform.rect.height);
+
+            if (cameraProperties.useDefaultSettings)
+            {
+                //Setting default values.
+                cameraProperties.requestedHeight = (int)screenRect.height;
+                cameraProperties.requestedWidth = (int)screenRect.width;
+                cameraProperties.requestedFPS = defaultCameraFPS;
+            }
+
+            cameraTexture = new WebCamTexture
+            {
+                requestedWidth = cameraProperties.requestedWidth,
+                requestedHeight = cameraProperties.requestedHeight,
+                requestedFPS = cameraProperties.requestedFPS > 0 ? cameraProperties.requestedFPS : (cameraProperties.requestedFPS = defaultCameraFPS)
+            };
+
+            camWidth = cameraTexture.width;
+            camHeight = cameraTexture.height;
+
+            OnEnable();
+        }
     }
 
     public void ProcessQRCode()
     {
-        //VIsual effect here for the user and better UX
-
+        //Starts a new Thread that Encodes/Decodes QRCode.
         renderingThread = new Thread(ReadQRCode);
         renderingThread.Start();
     }
@@ -123,29 +130,41 @@ public class QRcodeSystem : MonoBehaviour
 
     private void Update()
     {
-        if (cameraColor == null && cameraTexture.isPlaying)
-            cameraColor = cameraTexture.GetPixels32();
+        if(systemMode != SystemMode.GENERATE)
+            RenderCamera();
 
-        if (camTexture != null && cameraTexture.isPlaying)
-            camTexture.texture = cameraTexture;
-
+        //Generates QRCode.
         if (shouldEncode && !string.IsNullOrEmpty(encodeData))
             GenerateQRCode(encodeData);
 
-        //TODO: Remove (only for testing)
+#if UNITY_EDITOR
+        //Only for testing in the Editor
         TestSystem();
+#endif
+
     }
+
+    private void RenderCamera()
+    {
+        if (cameraColor == null && cameraTexture.isPlaying)
+            cameraColor = cameraTexture.GetPixels32();
+
+        if (cameraRenderTexture != null && cameraTexture.isPlaying)
+            cameraRenderTexture.texture = cameraTexture;
+    }
+
+
 
     public void GenerateQRCode(string encodeData)
     {
-        if (string.IsNullOrEmpty(encodeData) || !shouldEncode)
+        if (string.IsNullOrEmpty(encodeData))
             return;
 
         var color32 = Encode(encodeData, tempQRCodeTexture2D.width , tempQRCodeTexture2D.height);
         tempQRCodeTexture2D.SetPixels32(color32);
         tempQRCodeTexture2D.Apply();
 
-        qrCodeRawImage.texture = tempQRCodeTexture2D;
+        generatedQRCodeTexture.texture = tempQRCodeTexture2D;
         QRCodeDetected?.Invoke();
         shouldEncode = false;
     }
@@ -209,8 +228,7 @@ public class QRcodeSystem : MonoBehaviour
     }
 
 
-    #region Testing
-
+    #region Testing (Editor Only)
     private void TestSystem()
     {
         if (Input.GetKeyDown(KeyCode.E))
@@ -243,9 +261,6 @@ public class QRcodeSystem : MonoBehaviour
             $"Height : {screenRect.height}" +
             $"Width : {screenRect.width}");
     }
-
-
-
 
     #endregion
 

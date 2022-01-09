@@ -5,16 +5,30 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public Text statusText;
-    public Button urlButton;
-    public Image scanningIndicator;
-    public Image processStatusIcon;
-    public Sprite successIcon;
-    public Sprite failIcon;
-    public RawImage generatedQRCodeImage;
-    public QRcodeSystem qrCodeManager;
+    public enum UIMode { QRScan, QRGenerate, MainMenu }
+    [SerializeField] private UIMode mode = UIMode.QRGenerate;
+    [SerializeField] private QRcodeSystem qrCodeManager;
 
-    private const string scanningText = "Scanning...";
+    [Header("MainMenu UI")]
+    [SerializeField] private Button scanButton;
+    [SerializeField] private Button generateButton;
+
+    [Header("QRGenerator UI")]
+    [SerializeField] private InputField urlInputField;
+    [SerializeField] private Button generateQRButton;
+    [SerializeField] private Button generateSceneBackButton;
+
+    [Header("QRScan UI")]
+    [SerializeField] private Text statusText;
+    [SerializeField] private Button urlButton;
+    [SerializeField] private Image scanningIndicator;
+    [SerializeField] private Image processStatusIcon;
+    [SerializeField] private Sprite successIcon;
+    [SerializeField] private Sprite failIcon;
+    [SerializeField] private RawImage generatedQRCodeImage;
+    [SerializeField] private Button scanSceneBackButton;
+
+
     private const string noCameraPermissionText = "Camera Permission Denied!";
 
 
@@ -47,26 +61,48 @@ public class UIManager : MonoBehaviour
 
         if (processStatusIcon)
             processStatusIcon.gameObject.SetActive(false);
+
+
+        //Request Camera Permission here for MAIN MENU MODE
     }
 
     private void SubscribeEvents()
     {
-        qrCodeManager.QRCodeDetected += PostQRCodeDetection;
-        urlButton.onClick.AddListener(OpenURL);
+        switch (mode)
+        {
+            case UIMode.QRScan:
+                qrCodeManager.QRCodeDetected += PostQRCodeDetection;
+                urlButton.onClick.AddListener(OpenURL);
+                scanSceneBackButton.onClick.AddListener(LoadMainMenu);
+                break;
+
+            case UIMode.QRGenerate:
+                generateQRButton.onClick.AddListener(GenerateQRCode);
+                generateSceneBackButton.onClick.AddListener(LoadMainMenu);
+                break;
+
+            case UIMode.MainMenu:
+                scanButton.onClick.AddListener(CustomSceneManager.LoadScanScene);
+                generateButton.onClick.AddListener(CustomSceneManager.LoadGenerateScene);
+                break;
+        }
     }
 
     public void StartScanning()
     {
-
-        //User hasn't granted Permission!
-        if (PermissionManager.HaveCameraPermission)
+        //Only for Scan Mode!
+        if (mode == UIMode.QRScan)
         {
-            SetStatus(noCameraPermissionText, true);
-            return;
-        }
+            //User hasn't granted Permission!
+            if (!PermissionManager.HaveCameraPermission)
+            {
+                SetStatus(noCameraPermissionText, true);
+                return;
+            }
 
-        scanningIndicator.gameObject.SetActive(true);
-        qrCodeManager.ProcessQRCode();
+            scanningIndicator.gameObject.SetActive(true);
+            qrCodeManager.ProcessQRCode();
+        }
     }
 
     public void StopScanning()
@@ -82,8 +118,6 @@ public class UIManager : MonoBehaviour
 
         if (!string.IsNullOrEmpty(encodeData))
             SetStatus(encodeData);
-
-        //StopScanning();
     }
 
     private void SetStatus(string text, bool statusFailed = false)
@@ -112,5 +146,21 @@ public class UIManager : MonoBehaviour
         var encodedData = qrCodeManager.GetEncodedData();
         URLBrowser.OpenURL(encodedData);
     }
+
+    private void GenerateQRCode()
+    {
+        if (urlInputField == null || string.IsNullOrEmpty(urlInputField.text))
+            return;
+
+        //Remove any whitespace in the url.
+        string url = urlInputField.text.Trim();
+        qrCodeManager.GenerateQRCode(url);
+    }
+
+    private void LoadMainMenu()
+    {
+        CustomSceneManager.LoadMainMenuScene();
+    }
+
 
 }

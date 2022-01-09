@@ -15,7 +15,11 @@ public static class PermissionManager
 
     private static bool HasUserAuthorizedCamera()
     {
+#if UNITY_EDITOR
+        return true;  
+#else
         return Permission.HasUserAuthorizedPermission(Permission.Camera);
+#endif
     }
 
     private static void RequestCameraAccess()

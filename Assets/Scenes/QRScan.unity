@@ -207,7 +207,7 @@ GameObject:
   - component: {fileID: 273850787}
   - component: {fileID: 273850786}
   m_Layer: 5
-  m_Name: CameraTexture
+  m_Name: RenderCameraTexture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -456,6 +456,7 @@ RectTransform:
   - {fileID: 1375023790}
   - {fileID: 952445044}
   - {fileID: 1818112735}
+  - {fileID: 1364807953}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -493,15 +494,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61fc541e383fb924d8e346ac5e3131dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  readTime: 3
-  camTexture: {fileID: 273850786}
-  qrCodeRawImage: {fileID: 1444353359}
-  testQRCode: www.Instagram.com
+  systemMode: 2
+  cameraRenderTexture: {fileID: 273850786}
+  generatedQRCodeTexture: {fileID: 1444353359}
   cameraProperties:
+    useDefaultSettings: 0
     requestedHeight: 700
     requestedWidth: 700
     requestedFPS: 30
-    useDefaultSettings: 0
 --- !u!4 &842068380
 Transform:
   m_ObjectHideFlags: 0
@@ -635,6 +635,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 888f22362c4f9634fa23c9675794f61b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mode: 0
+  qrCodeManager: {fileID: 842068379}
+  scanButton: {fileID: 0}
+  generateButton: {fileID: 0}
+  urlInputField: {fileID: 0}
+  generateQRButton: {fileID: 0}
+  generateSceneBackButton: {fileID: 0}
   statusText: {fileID: 1818242591}
   urlButton: {fileID: 1375023791}
   scanningIndicator: {fileID: 952445045}
@@ -642,7 +649,7 @@ MonoBehaviour:
   successIcon: {fileID: 21300000, guid: 439713812981de94a9a6cc415597e605, type: 3}
   failIcon: {fileID: 21300000, guid: 10265d8d35edf2f439eae49b753d1d96, type: 3}
   generatedQRCodeImage: {fileID: 1444353359}
-  qrCodeManager: {fileID: 842068379}
+  scanSceneBackButton: {fileID: 1364807954}
 --- !u!4 &1293223525
 Transform:
   m_ObjectHideFlags: 0
@@ -657,6 +664,126 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1364807952
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1364807953}
+  - component: {fileID: 1364807956}
+  - component: {fileID: 1364807955}
+  - component: {fileID: 1364807954}
+  m_Layer: 5
+  m_Name: BackButton
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1364807953
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364807952}
+  m_LocalRotation: {x: -0, y: -0, z: -0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 744004814}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 150.00003, y: -150}
+  m_SizeDelta: {x: 200, y: 200}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1364807954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364807952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1364807955}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1364807955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364807952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1364807956
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364807952}
+  m_CullTransparentMesh: 1
 --- !u!1 &1375023789
 GameObject:
   m_ObjectHideFlags: 0
@@ -791,7 +918,7 @@ GameObject:
   - component: {fileID: 1444353360}
   - component: {fileID: 1444353359}
   m_Layer: 5
-  m_Name: QRCodeTexture
+  m_Name: GeneratedQRCode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -996,7 +1123,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: URL
+  m_Text: Visit
 --- !u!222 &1818242592
 CanvasRenderer:
   m_ObjectHideFlags: 0
