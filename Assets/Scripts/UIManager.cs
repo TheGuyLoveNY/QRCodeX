@@ -64,6 +64,8 @@ public class UIManager : MonoBehaviour
 
 
         //Request Camera Permission here for MAIN MENU MODE
+        if (mode == UIMode.MainMenu && !PermissionManager.HaveCameraPermission)
+            PermissionManager.RequestCameraPermissionAction?.Invoke();
     }
 
     private void SubscribeEvents()
@@ -159,6 +161,9 @@ public class UIManager : MonoBehaviour
 
     private void LoadMainMenu()
     {
+        if(mode == UIMode.QRScan)
+            StopScanning();
+
         CustomSceneManager.LoadMainMenuScene();
     }
 

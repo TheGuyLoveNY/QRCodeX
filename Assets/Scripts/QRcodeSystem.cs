@@ -60,7 +60,7 @@ public class QRcodeSystem : MonoBehaviour
 
         if (!PermissionManager.HaveCameraPermission)
         {
-            PermissionManager.RequestCameraPermissionAction.Invoke();
+            PermissionManager.RequestCameraPermissionAction?.Invoke();
             return;
         }
 
@@ -218,8 +218,7 @@ public class QRcodeSystem : MonoBehaviour
 
     public void StopQRScan()
     {
-        if (renderingThread != null)
-            renderingThread.Abort();
+        OnDisable();
     }
 
     public string GetEncodedData()
