@@ -548,7 +548,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: a96855bf1c0e4dd489732355e92597a6, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -744,6 +744,7 @@ MonoBehaviour:
   generateButton: {fileID: 291412380}
   urlInputField: {fileID: 0}
   generateQRButton: {fileID: 0}
+  generateSceneBackButton: {fileID: 0}
   statusText: {fileID: 0}
   urlButton: {fileID: 0}
   scanningIndicator: {fileID: 0}
@@ -751,6 +752,7 @@ MonoBehaviour:
   successIcon: {fileID: 0}
   failIcon: {fileID: 0}
   generatedQRCodeImage: {fileID: 0}
+  scanSceneBackButton: {fileID: 0}
 --- !u!4 &1438273384
 Transform:
   m_ObjectHideFlags: 0
