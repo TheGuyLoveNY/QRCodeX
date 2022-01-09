@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class SceneManager : MonoBehaviour
 {
-    private const string nextScene = "UnityDemo";
+    //TODO
+    private const string nextScene = "QRScan";
 
     public void RequestCamera()
     {

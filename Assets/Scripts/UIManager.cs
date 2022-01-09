@@ -8,26 +8,30 @@ public class UIManager : MonoBehaviour
     public Text statusText;
     public Button urlButton;
     public Image scanningIndicator;
+    public Image processStatusIcon;
+    public Sprite successIcon;
+    public Sprite failIcon;
     public RawImage generatedQRCodeImage;
     public QRcodeSystem qrCodeManager;
 
-
     private const string scanningText = "Scanning...";
-    private const string noCameraPermissionText = "Error: Camera Permission Required!";
+    private const string noCameraPermissionText = "Camera Permission Denied!";
 
 
     private void Start()
     {
-        InitializeUI();
+        Initialize();
         SubscribeEvents();
+
+        StartScanning();
     }
 
-    private void OnEnable()
+    private void OnApplicationFocus(bool hasFocus)
     {
         StartScanning();
     }
 
-    private void InitializeUI()
+    private void Initialize()
     {
         if (statusText)
             statusText.gameObject.SetActive(false);
@@ -40,6 +44,9 @@ public class UIManager : MonoBehaviour
 
         if (generatedQRCodeImage)
             generatedQRCodeImage.gameObject.SetActive(false);
+
+        if (processStatusIcon)
+            processStatusIcon.gameObject.SetActive(false);
     }
 
     private void SubscribeEvents()
@@ -52,9 +59,9 @@ public class UIManager : MonoBehaviour
     {
 
         //User hasn't granted Permission!
-        if (!PermissionManager.HaveCameraPermission)
+        if (PermissionManager.HaveCameraPermission)
         {
-            SetStatusText(noCameraPermissionText, true);
+            SetStatus(noCameraPermissionText, true);
             return;
         }
 
@@ -74,12 +81,12 @@ public class UIManager : MonoBehaviour
         var encodeData = qrCodeManager.GetEncodedData();
 
         if (!string.IsNullOrEmpty(encodeData))
-            SetStatusText(encodeData);
+            SetStatus(encodeData);
 
         //StopScanning();
     }
 
-    private void SetStatusText(string text, bool errorText = false)
+    private void SetStatus(string text, bool statusFailed = false)
     {
         if (!statusText)
         {
@@ -89,10 +96,14 @@ public class UIManager : MonoBehaviour
 
         urlButton.gameObject.SetActive(true);
         statusText.gameObject.SetActive(true);
-        generatedQRCodeImage.gameObject.SetActive(true);
+        processStatusIcon.gameObject.SetActive(true);
+
+        if (!statusFailed)
+            generatedQRCodeImage.gameObject.SetActive(true);
 
         statusText.text = text;
-        statusText.color = errorText ? Color.red : Color.white;
+        statusText.color = statusFailed ? Color.red : Color.white;
+        processStatusIcon.sprite = statusFailed ? failIcon : successIcon;
     }
 
 

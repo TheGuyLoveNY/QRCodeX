@@ -46,7 +46,10 @@ public class QRcodeSystem : MonoBehaviour
     private void OnEnable()
     {
         if (!PermissionManager.HaveCameraPermission)
+        {
             PermissionManager.RequestCameraPermissionAction.Invoke();
+            return;
+        }
 
         if (cameraTexture != null && !cameraTexture.isPlaying)
         {
@@ -120,7 +123,7 @@ public class QRcodeSystem : MonoBehaviour
 
     private void Update()
     {
-        if (cameraColor == null)
+        if (cameraColor == null && cameraTexture.isPlaying)
             cameraColor = cameraTexture.GetPixels32();
 
         if (camTexture != null && cameraTexture.isPlaying)
