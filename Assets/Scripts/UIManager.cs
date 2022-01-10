@@ -17,6 +17,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private InputField urlInputField;
     [SerializeField] private Button generateQRButton;
     [SerializeField] private Button generateSceneBackButton;
+    [SerializeField] private Button generateSceneShareButton;
 
     [Header("QRScan UI")]
     [SerializeField] private Text statusText;
@@ -27,6 +28,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Sprite failIcon;
     [SerializeField] private RawImage generatedQRCodeImage;
     [SerializeField] private Button scanSceneBackButton;
+    [SerializeField] private Button ScanSceneShareButton;
 
 
     private const string noCameraPermissionText = "Camera Permission Denied!";
@@ -62,6 +64,12 @@ public class UIManager : MonoBehaviour
         if (processStatusIcon)
             processStatusIcon.gameObject.SetActive(false);
 
+        if (generateSceneShareButton)
+            generateSceneShareButton.gameObject.SetActive(false);
+
+        if (ScanSceneShareButton)
+            ScanSceneShareButton.gameObject.SetActive(false);
+
 
         //Request Camera Permission here for MAIN MENU MODE
         if (mode == UIMode.MainMenu && !PermissionManager.HaveCameraPermission)
@@ -76,11 +84,14 @@ public class UIManager : MonoBehaviour
                 qrCodeManager.QRCodeDetected += PostQRCodeDetection;
                 urlButton.onClick.AddListener(OpenURL);
                 scanSceneBackButton.onClick.AddListener(LoadMainMenu);
+                ScanSceneShareButton.onClick.AddListener(ShareGeneratedQRCode);
                 break;
 
             case UIMode.QRGenerate:
+                qrCodeManager.QRCodeDetected += PostQRCodeDetection;
                 generateQRButton.onClick.AddListener(GenerateQRCode);
                 generateSceneBackButton.onClick.AddListener(LoadMainMenu);
+                generateSceneShareButton.onClick.AddListener(ShareGeneratedQRCode);
                 break;
 
             case UIMode.MainMenu:
@@ -115,11 +126,20 @@ public class UIManager : MonoBehaviour
 
     private void PostQRCodeDetection()
     {
+        if (mode == UIMode.QRScan)
+        {
+            var encodeData = qrCodeManager.GetEncodedData();
 
-        var encodeData = qrCodeManager.GetEncodedData();
+            if (!string.IsNullOrEmpty(encodeData))
+                SetStatus(encodeData);
 
-        if (!string.IsNullOrEmpty(encodeData))
-            SetStatus(encodeData);
+            ScanSceneShareButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            generateSceneShareButton.gameObject.SetActive(true);    
+        }
+
     }
 
     private void SetStatus(string text, bool statusFailed = false)
@@ -165,6 +185,12 @@ public class UIManager : MonoBehaviour
             StopScanning();
 
         CustomSceneManager.LoadMainMenuScene();
+    }
+
+
+    private void ShareGeneratedQRCode()
+    {
+        qrCodeManager.ShareGeneratedQRCode();
     }
 
 

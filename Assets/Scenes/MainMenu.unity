@@ -184,7 +184,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 100
-    m_FontStyle: 3
+    m_FontStyle: 1
     m_BestFit: 1
     m_MinSize: 1
     m_MaxSize: 100
@@ -194,7 +194,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: QR Coder
+  m_Text: QR Codex
 --- !u!222 &209654887
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -745,6 +745,7 @@ MonoBehaviour:
   urlInputField: {fileID: 0}
   generateQRButton: {fileID: 0}
   generateSceneBackButton: {fileID: 0}
+  generateSceneShareButton: {fileID: 0}
   statusText: {fileID: 0}
   urlButton: {fileID: 0}
   scanningIndicator: {fileID: 0}
@@ -753,6 +754,7 @@ MonoBehaviour:
   failIcon: {fileID: 0}
   generatedQRCodeImage: {fileID: 0}
   scanSceneBackButton: {fileID: 0}
+  ScanSceneShareButton: {fileID: 0}
 --- !u!4 &1438273384
 Transform:
   m_ObjectHideFlags: 0

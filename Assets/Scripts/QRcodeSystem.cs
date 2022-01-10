@@ -153,6 +153,15 @@ public class QRcodeSystem : MonoBehaviour
             cameraRenderTexture.texture = cameraTexture;
     }
 
+    public void ShareGeneratedQRCode()
+    {
+        if (!generatedQRCodeTexture || generatedQRCodeTexture.texture == null)
+            return;
+
+        var pathSaved = ImageCreator.SaveTextureToJPG(generatedQRCodeTexture.texture as Texture2D);
+        ShareManager.ShareQRCode(pathSaved);
+    }
+
 
 
     public void GenerateQRCode(string encodeData)
