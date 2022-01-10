@@ -159,7 +159,7 @@ public class QRcodeSystem : MonoBehaviour
             return;
 
         var pathSaved = ImageCreator.SaveTextureToJPG(generatedQRCodeTexture.texture as Texture2D);
-        ShareManager.ShareQRCode(pathSaved);
+        ShareManager.ShareFile(pathSaved);
     }
 
 

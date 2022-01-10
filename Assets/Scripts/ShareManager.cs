@@ -1,18 +1,22 @@
-
 public class ShareManager
 {
+    private static NativeShare _ns;
 
-    public static void ShareQRCodeWithText(string filePath, string customMessage)
+    public static UnityEngine.Events.UnityAction PostShareAction;
+
+    public static void ShareFile(string filePath, string customMessage = "")
     {
-        //TODO: Plus New sharing library here
-       // UnityNativeSharingHelper.ShareScreenshotAndText(customMessage, filePath, true);
+        if(_ns == null)
+            _ns = new NativeShare();
+
+        _ns.AddFile(filePath);
+        _ns.SetText(customMessage);
+        _ns.SetCallback(Callback);
+        _ns.Share();
     }
 
-
-    public static void ShareQRCode(string filePath)
+    private static void Callback(NativeShare.ShareResult result, string shareTarget)
     {
-        //TODO: Plus New sharing library here
-        // UnityNativeSharingHelper.ShareScreenshotAndText(string.Empty, filePath);
+        PostShareAction?.Invoke();
     }
-
 }

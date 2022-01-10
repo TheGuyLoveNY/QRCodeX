@@ -82,6 +82,7 @@ public class UIManager : MonoBehaviour
         {
             case UIMode.QRScan:
                 qrCodeManager.QRCodeDetected += PostQRCodeDetection;
+                ShareManager.PostShareAction += OnQRCodeShare;
                 urlButton.onClick.AddListener(OpenURL);
                 scanSceneBackButton.onClick.AddListener(LoadMainMenu);
                 ScanSceneShareButton.onClick.AddListener(ShareGeneratedQRCode);
@@ -89,6 +90,7 @@ public class UIManager : MonoBehaviour
 
             case UIMode.QRGenerate:
                 qrCodeManager.QRCodeDetected += PostQRCodeDetection;
+                ShareManager.PostShareAction += OnQRCodeShare;
                 generateQRButton.onClick.AddListener(GenerateQRCode);
                 generateSceneBackButton.onClick.AddListener(LoadMainMenu);
                 generateSceneShareButton.onClick.AddListener(ShareGeneratedQRCode);
@@ -190,7 +192,17 @@ public class UIManager : MonoBehaviour
 
     private void ShareGeneratedQRCode()
     {
+        //Disable share button to prevent multiple requests.
+        var shareButton = mode == UIMode.QRScan ? ScanSceneShareButton.gameObject : generateSceneShareButton.gameObject;
+        shareButton.SetActive(false);
+
         qrCodeManager.ShareGeneratedQRCode();
+    }
+
+    private void OnQRCodeShare()
+    {
+        var shareButton = mode == UIMode.QRScan ? ScanSceneShareButton.gameObject : generateSceneShareButton.gameObject;
+        shareButton.SetActive(true);
     }
 
 
