@@ -1,4 +1,4 @@
-# QRCodeX: ** Android Application to Scan/Generate QR Code **
+# QRCodeX: **Android Application to Scan/Generate QR Code**
 
 # Project Description
 ## Features:
