@@ -9,6 +9,6 @@
 
 ## Framework & Libraries Used:
 - Unity 2020 (LTS)
-- [ZXing] (https://github.com/zxing/zxing) Library for QR Code APIs.
+- [ZXing](https://github.com/zxing/zxing) Library for QR Code APIs.
 - [Native Sharing](https://github.com/yasirkula/UnityNativeShare) Library for Sharing.
 
